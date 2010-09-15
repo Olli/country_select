@@ -1,8 +1,9 @@
+require 'enumerator'
 module Geography
   
   class << self
     def country_codes
-      @@country_codes ||= COUNTRIES.map{|country, code| code}
+      @@country_codes ||= @@countries.map{|country, code| code}
     end
     
     def country_name_from_code(code)
@@ -16,14 +17,14 @@ module Geography
     private
 
       def country_names_hash
-        @@country_names_hash ||= Geography::COUNTRIES.inject({}) {|hash,country| hash[country.last.downcase] = country.first; hash }
+        @@country_names_hash ||= @@countries.inject({}) {|hash,country| hash[country.last.downcase] = country.first; hash }
       end
 
       def country_codes_hash
-        @@country_codes_hash ||= Geography::COUNTRIES.inject({}) {|hash,country| hash[country.first.downcase] = country.last; hash }
+        @@country_codes_hash ||= @@countries.inject({}) {|hash,country| hash[country.first.downcase] = country.last; hash }
       end
   end
-  
+
   COUNTRIES =  [
     ['Afghanistan', 'AF'],
     ['Åland Islands', 'AX'],
@@ -269,5 +270,9 @@ module Geography
     ['Zambia', 'ZM'],
     ['Zimbabwe', 'ZW']
   ]
+
+  DB_COUNTRIES = COUNTRIES.to_enum(:each_with_index).collect{ |c, index| [c[0], index] }
   
+  mattr_accessor :countries
+  self.countries = DB_COUNTRIES
 end
